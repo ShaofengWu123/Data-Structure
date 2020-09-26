@@ -48,6 +48,42 @@ void Range_Delete(Linklist &La, Elemtype mink, Elemtype maxk) {
 //最坏情况：从第一个就开始删除，一直删到最后一个，因为是边遍历，边删除，所以On（如果只是移动指针以及进行判断，每次循环的操作数小于删除，所以最坏情况是从头删到尾）
 
 
+void Range_Delete(Linklist& La, Elemtype mink, Elemtype maxk) {
+	if (mink >= maxk - 1) { printf("删除范围非法"); exit(0); }
+	Linklist p, q, prev;
+	drear = La;
+	p = La->next;
+	while (p && p->data<maxk) {
+		if (p->data <= mink) {
+			prev = p;
+			p = p->next;
+		}
+		else {
+			prev->next = p->next;
+			q = p;
+			p = p->next;
+			free(q);
+		}
+	}
+}
+
+void Range_Delete(Linklist& La, Elemtype mink, Elemtype maxk) {
+	if (mink >= maxk - 1) { printf("删除范围非法"); exit(0); }
+	Linklist p, q, prev;
+	drear = La;
+	p = La->next;
+	while (p && p->data <= mink) {
+		prev = p;
+		p = p->next;
+	}
+	while (p && p->data<maxk) {
+		prev->next = p->next;
+		q = p;
+		p = p->next;
+		free(q);
+	}
+}
+
 //2.26 单链表有序并集归并算法
 //A,B都是依值递增有序的
 void Intersect_Merge(Linklist A, Linklist B, Linklist &C) {
