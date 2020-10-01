@@ -1,0 +1,23 @@
+@startuml
+start
+if (Is index legal?) then (yes)
+ :Initialization
+ p=head,q=head->next,counter=1;
+
+ while (counter<index&&q) is (yes)
+  :move p,q to next position
+  counter++;
+ endwhile (no)
+ if(q?) then (yes)
+ :Delete
+ p->next = q->next
+ free(q);
+ :Return OK; 
+else (no)
+ : Return ERROR;
+endif
+else (no)
+ :Return ERROR;
+endif
+end
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+start
+if (Is index legal?) then (yes)
+ :Initialization
+ p=head,counter=1;
+ while (counter<index?&&p->next) is (yes)
+  :move p to next position
+  counter++;
+ endwhile (no)
+ if(counter==index?) then (yes)
+ :Insert
+ create new node q
+ q->next= p->next, p->next = q;
+ :Return OK; 
+ else (no)
+ : Return ERROR;
+ endif
+else (no)
+ :Return ERROR;
+endif
+end
+@enduml

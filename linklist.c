@@ -260,7 +260,7 @@ int main() {
 
 
 	//输出链表长度
-	printf("列表长度是%d\n",list_length(head));
+	printf("列表长度是%d(包含头结点)\n",list_length(head));
 	//用两个不同函数输出链表当前的各个节点
 	printf("此时链表为"); list_print(head);
 	list_travel(head,list_nodedebug);
