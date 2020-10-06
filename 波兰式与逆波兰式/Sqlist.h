@@ -21,5 +21,5 @@ int Length_Sqlist(SqList list);
 void Clear_Sqlist(SqList* plist);
 void Destroy_Sqlist(SqList* plist);
 STATUS Insertrear_Sqlist(SqList* plist, Elemtype_SqList e);
-void Debug_char_Sqlist(SqList list);
+void Debug_char_Sqlist(SqList * plist);
 void Test_char_Sqlist();

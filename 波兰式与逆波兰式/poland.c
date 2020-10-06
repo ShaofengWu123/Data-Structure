@@ -27,11 +27,12 @@ void generate_poland(char expression[],SqList * ppoland) {
 					Insertrear_Sqlist(ppoland, (char)temp_top);//出栈元素插到顺序表尾端
 					Getop_Stack(oprand, &temp_top);//取出栈后栈顶元素
 				}
-				Insertrear_Sqlist(ppoland, temp);//已经将所有优先级大于等于当前运算符的元素出栈，当前运算符入栈
+				Push_Stack(&oprand,(double)temp);//已经将所有优先级大于等于当前运算符的元素出栈，当前运算符入栈
 			}	
 		}
 		p++;
 		temp = *p;//移到表达式下一个位置
+		//Debug_char_Sqlist(ppoland);
 	}
 
 	while (oprand.base != oprand.top) {//剩余元素出栈
@@ -42,14 +43,16 @@ void generate_poland(char expression[],SqList * ppoland) {
 }
 
 
-double calcualate_poland(char poland[]) {
+double calcualate_poland(SqList poland) {
 	SqStack num;
 	Init_Stack(&num);
 	char temp;
-	temp = *poland;
-	while (temp != '\0') {
+	temp = poland.elem[0];
+	int i = 0;
+	while (i<poland.length) {
+		temp = (char)poland.elem[i];
 		if (temp >= '0' && temp <= '9') {
-			Push_Stack(&num, temp-48);
+			Push_Stack(&num, (double)(temp-48));
 		}
 		else
 		{
@@ -63,8 +66,7 @@ double calcualate_poland(char poland[]) {
 			case '/':Push_Stack(&num, (num1 / num2)); break;
 			}
 		}
-		poland++;
-		temp = *poland;
+		i++;
 	}
 	double result;
 	Pop_Stack(&num, &result);

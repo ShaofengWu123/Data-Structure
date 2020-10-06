@@ -46,6 +46,7 @@ STATUS Insertrear_Sqlist(SqList* plist,Elemtype_SqList e) {
 //Debug
 void Debug_char_Sqlist(SqList * plist) {
 	printf("当前顺序表为:");
+	int a = plist->length;
 	for (int i = 0; i < plist->length; i++) {
 		printf("%c ",plist->elem[i]);
 	}
