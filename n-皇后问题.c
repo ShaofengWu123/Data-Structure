@@ -4,7 +4,7 @@
 //#include <windows.h>
 
 //棋盘初始大小
-#define SQLIST_INIT_SIZE 200
+#define SQLIST_INIT_SIZE 8
 #define SQLIST_INCREMENT 10
 #define PROBLEM_NUM 1
 
@@ -228,7 +228,7 @@ int main() {
 	}
 	end = clock();
 	printf("共解出%d个%d-皇后问题，耗时%.6f s，共重启%d次\n", counter, SQLIST_INIT_SIZE,(double)(end-start)/ CLK_TCK,counter2);
-	//Print_chessboard(cb);//打印棋盘
+	Print_chessboard(cb);//打印棋盘
 	printf("棋盘评分:%d\n", evaluate(cb));
 	
 	return 0;
