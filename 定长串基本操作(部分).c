@@ -53,26 +53,36 @@ STATUS Replace(StringType * Sptr,StringType T, StringType V) {
 	return flag;
 }
 
-void Count_chars(StringType S,StringType * sptr, int nums[]) {//传入的sptr->length和nums长度为MAX_STRLEN，并且nums默认置0，用于存储每个字符出现的次数，sptr指向的结构体存放每个不同的字符以及总的种类数量(即length)
-	int counter = 0;//记录当前已经探明的字符数量
-	int j = 0;
-	for (int i = 0; i < S.length; i++) {
-		j = 0;
-		for (; j < counter; j++) {
-			if (sptr->str[j] == S.str[i]) {
-			 break;//当前S中字符在已探明字符种类表中，对应的nums计数器加一
-			}
-		}
-		if (j == counter) {//j==counter说明当前字符不在表内
-			sptr->str[j] = S.str[i];
-			counter++;
-		}
-		nums[j]++;
+//void Count_chars(StringType S,StringType * sptr, int nums[]) {//传入的sptr->length和nums长度为MAX_STRLEN，并且nums默认置0，用于存储每个字符出现的次数，sptr指向的结构体存放每个不同的字符以及总的种类数量(即length)
+//	int counter = 0;//记录当前已经探明的字符数量
+//	int j = 0;
+//	for (int i = 0; i < S.length; i++) {
+//		j = 0;
+//		for (; j < counter; j++) {
+//			if (sptr->str[j] == S.str[i]) {
+//			 break;//当前S中字符在已探明字符种类表中，对应的nums计数器加一
+//			}
+//		}
+//		if (j == counter) {//j==counter说明当前字符不在表内
+//			sptr->str[j] = S.str[i];
+//			counter++;
+//		}
+//		nums[j]++;
+//	}
+//	sptr->length = counter;//记录字符种类数
+//}
+
+int Count_chars(StringType S, int Count[]) {
+	int count = 0;
+	int L = S.length;
+	for (int i = 0; i < L;i++) {
+		if (!(Count[(S.str[i])]++)) { count++; }
 	}
-	sptr->length = counter;//记录字符种类数
+	return count;
 }
 
 int main() {
+	int Count[256] = { 0 };
 	StringType a, b, d;
 	a.length = 8; 
 	a.str[0] = 'b';
@@ -94,8 +104,10 @@ int main() {
 		nums[i] = 0;
 	}
 	StringType storage;
-	Count_chars(a,&storage,nums);
-	printf("%c", storage.str[0]);
-	printf("%c", storage.str[1]);
-	printf("%c", storage.str[2]);
+	int m = Count_chars(a,Count);
+	int m1 = Count['a'];
+	m1 = Count['b'];
+	m1 = Count['c'];
+	m1 = Count['1'];
+
  }

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 //精度，分别是整数部分位数和小数部分位数
-#define MAX_LEN1 20
-#define MAX_LEN2 20
+#define MAX_LEN1 5
+#define MAX_LEN2 5
 
 
 //定义高精度数结构体，包括整数部分每一位数字的数组、小数部分每一位数字的数组以及整数/小数位数大小
@@ -46,7 +46,9 @@ void Get_hanumber(hanumber * hnptr,char s[]) {//规定读入十进制数字
 		hnptr->float_numbers[i] = 0;
 	}
 	int sub;
-	sub = Searchelem(s, '.'); hnptr->ints = sub;
+	sub = Searchelem(s, '.'); 
+	hnptr->ints = sub;
+	hnptr->floats = 0;
 	for (int i = sub - 1; i >= 0; i--) { hnptr->int_numbers[sub - 1 - i] = s[i]-'0'; }//整数部分写入，个位在前
 	int i = sub;//小数部分写入，十分位在前
 	hnptr->floats = 0;
@@ -61,11 +63,11 @@ void Get_hanumber(hanumber * hnptr,char s[]) {//规定读入十进制数字
 //输出数字
 void Print_hanumber(hanumber hn) {
 	for (int i = hn.ints - 1; i >= 0; i--) {
-		printf("%d",hn.int_numbers[i]);
+		printf("%d ",hn.int_numbers[i]);
 	}
 	if(hn.floats) printf(".");
 	for (int i = 0; i < hn.floats; i++) {
-		printf("%d", hn.float_numbers[i]);
+		printf("%d ", hn.float_numbers[i]);
 	}
 	printf("\n");
 }
@@ -87,6 +89,35 @@ void Equal_hanumber(hanumber hn1, hanumber* hnptr) {
 	hnptr->floats = hn1.floats;
 	for (int i = 0; i < MAX_LEN1; i++) { hnptr->int_numbers[i] = hn1.int_numbers[i]; }
 	for (int i = 0; i < MAX_LEN2; i++) { hnptr->float_numbers[i] = hn1.float_numbers[i]; }
+}
+
+//进制转换，从n进制转换到m进制。由于进制转换需要用数作为一个整体运算，无法达到任意位数
+hanumber Transfer_hanumber(hanumber hn1, int n, int m) {
+	hanumber result;
+	int INTS = 0; 
+	double FLOATS = 0;
+	//整数部分转换
+	for (int i = hn1.ints-1; i >=0; i--) {
+		INTS = INTS * n + hn1.int_numbers[i];
+	}
+	int i = 0;
+	for (; INTS > 0; i++) {
+		result.int_numbers[i] = INTS % m;
+		INTS /= m;
+	}
+	result.ints = i;
+	//小数部分转换
+	for (int j = hn1.floats-1; j>= 0; j--) {
+		FLOATS = FLOATS / n + hn1.float_numbers[j];
+	}
+	FLOATS /= n;
+	for (int j = 0; j < MAX_LEN2; j++) {
+		result.float_numbers[j] = (int)(FLOATS * m);
+		FLOATS = FLOATS*m - (int)(FLOATS*m);
+	}
+	if (!hn1.floats) { result.floats = 0; }
+	else { result.floats = MAX_LEN2; }
+	return result;
 }
 
 //加法,其中n表示进制
@@ -168,12 +199,14 @@ hanumber Multiply_hanumber(hanumber* hnptr1, hanumber* hnptr2, int n) {
 
 int main() {
 	hanumber hn1,hn2,hn3,hn4;
-	char* s1 = "3.7"; char* s2 = "2.8";
+	char* s1 = "0.706"; 
+	char* s2 = "6";
 	Get_hanumber(&hn1,s1);
 	Get_hanumber(&hn2,s2);
 	
-	/*hn1 = Plus_hanumber(&hn1,&hn2,10);
-	Print_hanumber(hn1);*/
-	hn1 = Minus_hanumber(&hn1, &hn2, 10);
+	//hn1 = Plus_hanumber(&hn1,&hn2,2);
+	//Print_hanumber(hn1);
+	//hn1 = Minus_hanumber(&hn1, &hn2, 2);
+	hn1 = Transfer_hanumber(hn1,10,2);
 	Print_hanumber(hn1);
 }
