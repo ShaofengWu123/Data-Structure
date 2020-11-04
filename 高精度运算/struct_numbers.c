@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 //精度，分别是整数部分位数和小数部分位数
-#define MAX_LEN1 3
+#define MAX_LEN1 5
 #define MAX_LEN2 10
 
 //定义高精度数结构体，包括整数部分每一位数字的数组、小数部分每一位数字的数组以及整数/小数位数大小
@@ -174,6 +174,7 @@ hanumber Transfer_hanumber(hanumber hn1, int n, int m) {
 	}
 	if (!hn1.floats) { result.floats = 0; }
 	else { result.floats = MAX_LEN2; }
+	result.s = hn1.s;
 	return result;
 }
 
@@ -346,14 +347,12 @@ void Print_Poly(hanumber x, int n, char* a[], int m[], int S[], int N) {
 	}
 	printf(" = ");
 	Print_hanumber(x);
+	printf("\n");
 }
 
 int main() {
 	hanumber hn1,hn2,hn3,hn4;
-	char* s1 = "1.07"; 
-	char* s2 = "2";
-	Get_hanumber(&hn1,s1,1);
-	Get_hanumber(&hn2,s2,1);
+	
 	
 	//hn1 = Plus_hanumber(&hn1,&hn2,2);
 	//Print_hanumber(hn1);
@@ -361,14 +360,20 @@ int main() {
 	//hn1 = Transfer_hanumber(hn1,10,2);
 	//hn3 = Multiply_hanumber(&hn1,&hn2,10);
 	//hn3 = Divide_hanumber(&hn1, &hn2, 10);
-	Print_hanumber(hn1);
 	//Compare_hanumber(hn1,hn2);
+	char* s3 = "1.4";
+	Get_hanumber(&hn3, s3, 1);
+	hn4 = Transfer_hanumber(hn3,10,2);
+	Print_hanumber(hn4);
+	// 验证示例：3.7x^3-14/121x^2-6.0323=-1.75555441057   x = 1.06
+	char* s1 = "1.4";
+	Get_hanumber(&hn1, s1, 1);//把s1转换成高精度数
+	//以下三个数组交给多项式解析来完成
+	char* a[] = { "3/7","1/3","4" };//多项式各项系数绝对值
+	int m[] = {3,2,0};//多项式各项幂次
+	int S[] = { 1,-1,1 };//多项式各项系数大小
+	hn2 = Poly_hanumber(hn1,10,a,m,S,3);//计算多项式
+	Print_Poly(hn2, 10, a, m, S, 3);//格式化打印多项式计算结果
 
-	// 3.7x^3-1/3x^2-12.325     x = 1.07
-	char* a[] = { "1","3/2", };
-	int m[] = {3,2,};
-	int S[] = { 1,-1, };
-	hn2 = Poly_hanumber(hn1,10,a,m,S,2);
-	Print_Poly(hn2, 10, a, m, S, 2);
-	//Print_hanumber(hn2);
+	
 }
