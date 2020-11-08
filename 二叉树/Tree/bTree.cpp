@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+#define N 12
 
 
 //定义存放数据的类型,假设是可以存放多个数据的结构体类型 
@@ -299,11 +299,42 @@ int value0(bNode *root){
 	return value0(root->lchild)+value0(root->rchild);
 }
 
-/*读懂代码框架中的代码，二叉链表实现二叉树
+/*读懂代码框架中的代码，二叉链表实现二叉树*/
 
+//先序遍历序列中第k个节点
+int Preorderk(bNode* root, int k) {
+	static int count = 0; static int result=0;
+	if (root) {
+		count++;
+		if (count == k) { result = root->data.value; }
+		Preorderk(root->lchild,k);
+		Preorderk(root->rchild,k);
+	}
+	return result;
+}
 
-给定value值，求从根节点到value值节点的路径，用“左右右...”的左右孩子指针标记从根到节点的路径*/
-
+//给定value值，求从根节点到value值节点的路径，用“左右右...”的左右孩子指针标记从根到节点的路径
+int Rootpath(bNode *root,char path[],int pos,int x) {
+	//先序遍历树，并且对每个节点实时更新当前到该点的路线
+	static int count1 = 0, count2 = 0;
+	if (!root) { return 1; }
+	count2++;
+	if (root->data.value == x) { 
+		path[pos] = '\0'; 
+		printf("id = %d 路线为: %s \n", root->data.id, path); 
+		count1++; }
+	char lpath[N],rpath[N];
+	for (int i = 0; i < pos; i++) {
+		lpath[i] = path[i];
+		rpath[i] = path[i];
+	}
+	lpath[pos] = 'L';
+	rpath[pos] = 'R';
+	Rootpath(root->lchild, lpath, pos + 1, x);
+	Rootpath(root->rchild, rpath, pos + 1, x);
+	if (!count1&&count2==N) { printf("无路径到达！\n"); }
+	return 1;
+}
 
 //删除节点value = x的节点及其子树
 int xDestroyBtree(bNode * root,int x) {
@@ -338,9 +369,72 @@ int max_minus_min(bNode * root) {
 }
 
 //给定id1和id2，求其最近共同祖先，节点的id具有唯一性
+//先序遍历树，得到从根到id1和id2的路线，对比最后一个相同的节点即可
+int Same_ancestor(bNode* root, int path[], int pos, int idx1,int idx2) {
+	//先序遍历树，并且对每个节点实时更新当前到该点的路线
+	static int count1 = 0, count2 = 0,flag=0;
+	static int path_result1[N]; static int path_result2[N];
+	if (root) { count2++; }//记录已经访问的节点个数
+	if (flag!=2&&root) {//如果发现flag被修改了两次或者是空树，那么不需要具体操作，访问直接结束
+		if (root->data.id == idx1) {
+			//把当前路径写入path_result中，并把flag改为1，剩下未遍历节点访问的时候先判断flag，无需进行具体操作
+			//count1++;
+			for (int i = 0; i < pos; i++) {
+				path_result1[i] = path[i];
+			}
+			path_result1[pos] = idx1;
+			flag ++;
+		}
+		if (root->data.id == idx2) {
+			//把当前路径写入path_result中，并把flag加1，剩下未遍历节点访问的时候先判断flag，无需进行具体操作
+			//count1++;
+			for (int i = 0; i < pos; i++) {
+				path_result2[i] = path[i];
+			}
+			path_result2[pos] = idx2;
+			flag++;
+		}
+		int lpath[N] = { 0 }, rpath[N] = { 0 };
+		for (int i = 0; i < pos; i++) {
+			lpath[i] = path[i];
+			rpath[i] = path[i];
+		}
+		lpath[pos] = rpath[pos] = root->data.id;//更新路径
+		Same_ancestor(root->lchild, lpath, pos + 1, idx1,idx2);
+		Same_ancestor(root->rchild, rpath, pos + 1, idx1,idx2);
+		//if (!count1 && count2 == N) { printf("无共同祖先！\n"); }	
+	}
+	
+	if (!pos&&flag==2) {
+		//所有节点都访问完毕，
+		int i = 0;
+		while (path_result1[i] == path_result2[i]) { i++; }
+		printf("最近共同祖先的id为 %d \n",path_result1[i-1]);
+	}
+	else if(!pos){ printf("无共同祖先！\n"); }
+	return flag;
+}
+
+//int Near_ancestor(bNode* root, int idx1,int idx2) {
+//	int path1[N] = {0};
+//	int path2[N] = {0};
+//	//if (Same_ancestor(root, path1, 0, idx1)&& Same_ancestor(root, path2, 0, idx2))
+//		//{
+//		Same_ancestor(root, path1, 0, idx1); 
+//		Same_ancestor(root, path2, 0, idx2);
+//		//查找第一个不相同的地方
+//		int i = 0;
+//		while (path1[i] == path2[i]) { i++; }
+//		printf("最近祖先的id为 %d ",path1[i-1]);
+//	//}
+//	//else { printf("没有相同祖先!"); }
+//
+//	return 1;
+//}
+
 
 int main(){
-	int val[]={25,32,6,12,75,9,88,13,41,7,16,17};
+	int val[]={25,32,6,6,75,9,88,13,41,7,16,17};
 	int n = 12;
 	
 	printf("\n测试二叉树生成 value:");
@@ -411,8 +505,20 @@ int main(){
 	printf("\n树度为1的结点数目 %d ",node1(t1));
 	printf("\n树度为0的结点value之和 %d ",value0(t1)); 
 	
-	printf("\n最大值最小值之差 %d ", max_minus_min(t1));
+	printf("\n最大值最小值之差 %d \n", max_minus_min(t1));
 
+	//输出从根节点到所有等于value节点的路径
+	char path[N];
+	Rootpath(t1, path, 0,7 );
+
+	//查找最近共同祖先
+	//Near_ancestor(t1,1,2);
+	int path1[N] = { 0 };
+	int path2[N] = { 0 };
+	Same_ancestor(t1, path1, 0, 9,5);
+
+	//先序遍历第k个
+	Preorderk(t1, 5);
 	//删除等于value的节点和子树测试
 	saveTree(t1, "sg1.html");//删除前
 	xDestroyBtree(t1,17);

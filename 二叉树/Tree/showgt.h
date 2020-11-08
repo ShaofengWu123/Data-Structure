@@ -13,11 +13,11 @@
 void writeTree(bNode *root,FILE *fp){
 	if (root){
 		if (root->lchild){ 
-			fprintf(fp,"{source: '%d', target: '%d', 'rela': 'Lc', type: 'resolved'},\n",root->data.value,root->lchild->data.value); 
+			fprintf(fp,"{source: '%d_%d', target: '%d_%d', 'rela': 'Lc', type: 'resolved'},\n",root->data.id, root->data.value,root->lchild->data.id, root->lchild->data.value);
 			writeTree(root->lchild,fp);
 		}
 		if (root->rchild){
-			fprintf(fp,"{source: '%d', target: '%d', 'rela': 'Rc', type: 'resolved'},\n",root->data.value,root->rchild->data.value);
+			fprintf(fp,"{source: '%d_%d', target: '%d_%d', 'rela': 'Rc', type: 'resolved'},\n", root->data.id, root->data.value, root->rchild->data.id, root->rchild->data.value);
 			writeTree(root->rchild,fp);
 		}
 	}
