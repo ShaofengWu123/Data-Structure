@@ -1,4 +1,5 @@
 ﻿  bTree.cpp
 C:\Users\msi\Desktop\第二学位第一年\数据结构\作业以及上机作业\二叉树\Tree\bTree.cpp(54,10): warning C4477: “printf”: 格式字符串“%lx”需要类型“unsigned long”的参数，但可变参数 1 拥有了类型“bNode *”
 C:\Users\msi\Desktop\第二学位第一年\数据结构\作业以及上机作业\二叉树\Tree\bTree.cpp(168,9): warning C4477: “printf”: 格式字符串“%lx”需要类型“unsigned long”的参数，但可变参数 1 拥有了类型“bNode *”
-  Tree.vcxproj -> C:\Users\msi\Desktop\第二学位第一年\数据结构\作业以及上机作业\二叉树\Tree\Debug\Tree.exe
+C:\Users\msi\Desktop\第二学位第一年\数据结构\作业以及上机作业\二叉树\Tree\bTree.cpp(515,6): error C2371: “path”: 重定义；不同的基类型
+C:\Users\msi\Desktop\第二学位第一年\数据结构\作业以及上机作业\二叉树\Tree\bTree.cpp(511): message : 参见“path”的声明

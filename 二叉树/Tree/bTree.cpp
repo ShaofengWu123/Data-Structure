@@ -5,7 +5,10 @@
 #include <stdlib.h>
 
 #define N 12
+#define PTElemtype int
+#define CSTElemtype int 
 
+typedef enum _status {ERROR,OK}Status;
 
 //定义存放数据的类型,假设是可以存放多个数据的结构体类型 
 typedef struct{
@@ -19,6 +22,115 @@ typedef struct tnode{
 	struct tnode *lchild;
 	struct tnode *rchild;
 } bNode;
+
+
+
+//一般树的双亲表示法
+#define MAX_LEN_PTREE 10
+typedef struct ptnode {
+	PTElemtype data;
+	int parent;
+}PTNode;
+typedef struct ptree {
+	PTNode * nodes;
+	int root;//根的位置
+	int n;//总共的节点数
+}PTree;
+
+//一般树的初始化(双亲表示法)
+Status buildPTree(PTree* ppt,PTElemtype tree_data[],int tree_parent[],int n) {//传入两个数组，一个存放各id对应的data，一个存放各id对应的parent的id
+	//鲁棒性检查：是不是只有一个根节点或者说是不是联通的，此处略去
+	ppt->nodes = (PTNode*)malloc(n * sizeof(PTNode));//分配空间存放n个结构体
+	//int flag = 0;
+	ppt->n = n;//节点数量
+	for (int i = 0; i < n; i++) {
+		if (tree_parent[i] == -1) { ppt->root = i; }
+		ppt->nodes[i].data = tree_data[i];
+		ppt->nodes[i].parent = tree_parent[i];
+	}
+	return OK;
+}
+//将所有节点打印，用于debug
+Status printPTree(PTree ptree1) {
+	for (int i = 0; i < ptree1.n; i++) {
+		printf("节点信息: id=%d data=%d parent_id=%d \n",i,ptree1.nodes[i].data,ptree1.nodes[i].parent);
+	}
+	return OK;
+};
+
+
+
+//孩子-兄弟表示法
+//结构体定义
+typedef struct cstnode {
+	CSTElemtype data;
+	int id;
+	struct cstnode* firstchild;
+	struct cstnode* nextsibling;
+}CSTnode,*CSTree;
+
+
+
+
+
+
+//习题函数
+//exercise 6.66.由双亲表示法表示的树建立孩子-兄弟表示法的二叉树的二叉链表
+CSTree fromPTtoCST(PTree ptree1) {
+	//先将表内每个结构体都建立成一个CSTree节点，并把各结点指针存入一个CSTree节点数组中
+	CSTnode* cstree_nodes[MAX_LEN_PTREE];
+	CSTnode* pcstnode = NULL;
+	CSTnode* root=NULL;
+	for (int i = 0; i < ptree1.n; i++) {
+		pcstnode = (CSTnode*)malloc(sizeof(CSTnode));
+		cstree_nodes[i] = pcstnode;
+		pcstnode->data = ptree1.nodes[i].data;//data已经录入完成，之后不用管
+		pcstnode->id = i;
+		pcstnode->firstchild = pcstnode->nextsibling=NULL;
+	}
+	//对ptree进行遍历，碰到某节点如果它无双亲，跳过（根节点）；如果它的parent firstchild为NULL，则它为firstchild；否则它是他的parent的firstchild
+	//直到nextsibling为NULL的sibling的sibling（最右的sibling）
+	for (int i = 0; i < ptree1.n; i++) {
+		if (ptree1.nodes[i].parent != -1) {
+			CSTnode* ptempcstnode = cstree_nodes[ptree1.nodes[i].parent]->firstchild;
+			if (!ptempcstnode) { cstree_nodes[ptree1.nodes[i].parent]->firstchild = cstree_nodes[i]; }
+			else {
+				while (ptempcstnode->nextsibling) {
+					ptempcstnode = ptempcstnode->nextsibling;//走到最右兄弟处停下
+				}
+				ptempcstnode->nextsibling = cstree_nodes[i];//当前节点成为其parent的firstchild的最右兄弟
+			}
+		}
+		else { root = cstree_nodes[i]; }
+		}
+	return root;
+}
+//先序遍历孩子-兄弟二叉树
+Status Preorder_CST(CSTree cstree1,void (*fptr)(CSTnode cstnode)) {
+	if (cstree1) {
+		fptr(*cstree1);
+		Preorder_CST(cstree1->firstchild,fptr);
+		Preorder_CST(cstree1->nextsibling,fptr);
+	}
+	return OK;
+}
+//打印孩子-兄弟表示法的树，用于debug
+void printCSTree(CSTnode cstnode) {
+	/*if (cstree1) {
+		printf("节点信息：id=%d data=%d \n", cstree1->data, cstree1->id);
+		if (cstree1->firstchild) {printf("id=%d节点的firstchild为: id=%d data=%d\n", cstree1->data, cstree1->firstchild->id, cstree1->firstchild->data);}
+		CSTnode* temp = cstree1->firstchild->nextsibling;
+		printf("id=%d节点作为id=%d节点的firstchild，其兄弟有:\n", cstree1->firstchild->id, cstree1->id);
+		while (temp) {
+		
+		}*/
+	printf("节点信息：id=%d data=%d \n", cstnode.id, cstnode.data);
+	//return OK;
+	}
+
+	
+
+
 
 void cPrintNode(bNode* a);
 
@@ -505,6 +617,7 @@ int main(){
 	printf("\n树度为1的结点数目 %d ",node1(t1));
 	printf("\n树度为0的结点value之和 %d ",value0(t1)); 
 	
+	//输出最大值最小值之差
 	printf("\n最大值最小值之差 %d \n", max_minus_min(t1));
 
 	//输出从根节点到所有等于value节点的路径
@@ -512,13 +625,12 @@ int main(){
 	Rootpath(t1, path, 0,7 );
 
 	//查找最近共同祖先
-	//Near_ancestor(t1,1,2);
 	int path1[N] = { 0 };
-	int path2[N] = { 0 };
-	Same_ancestor(t1, path1, 0, 9,5);
+	Same_ancestor(t1, path1, 0, 9,10);
 
-	//先序遍历第k个
-	Preorderk(t1, 5);
+	////先序遍历第k个
+	//Preorderk(t1, 5);
+
 	//删除等于value的节点和子树测试
 	saveTree(t1, "sg1.html");//删除前
 	xDestroyBtree(t1,17);
@@ -526,7 +638,18 @@ int main(){
 
 	DestroyBTree(t1);
 
+	printf("\n下面进行双亲表示法树的测试\n");
+	//PTree测试
+	PTree ptree1;
+	PTElemtype ptree1_data[MAX_LEN_PTREE] = {17,9,10,21,3,25,30,19,7,5,};
+	int ptree1_parent[MAX_LEN_PTREE] = {4,3,4,-1,3,7,4,1,7,2,};
+	buildPTree(&ptree1,ptree1_data,ptree1_parent,MAX_LEN_PTREE);
+	printPTree(ptree1);
 	
+	//exercise 6.66.由双亲表示法表示的树建立孩子-兄弟表示法的二叉树的二叉链表
+	printf("exercise6.66测试\n");
+	fromPTtoCST(ptree1);
+	Preorder_CST(fromPTtoCST(ptree1),printCSTree);
 	return 0;
 }
 
